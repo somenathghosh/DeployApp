@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-2.2.3.min.js"   integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="   crossorigin="anonymous"></script> 
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src='/socket.io/socket.io.js'></script>
+        
+        <script>
+            var socket = io();
+
+            socket.on('welcome', function(data) {
+                addMessage(data.message);
+
+                // Respond with a message including this clients' id sent from the server
+                socket.emit('i am client', {data: 'foo!', id: data.id});
+                $("#deploy").click(function(e){
+                  e.preventDefault();
+                  alert('clicked deploy');
+                  socket.emit('deploy', {data: 'deploy', id: data.id});
+                });
+            });
+            socket.on('time', function(data) {
+                console.log(data);
+                addMessage(data.time);
+            });
+            socket.on('error', console.error.bind(console));
+            socket.on('message', console.log.bind(console));
+
+            function addMessage(message) {
+                var text = document.createTextNode(message),
+                    el = document.createElement('li'),
+                    messages = document.getElementById('messages');
+
+                el.appendChild(text);
+                messages.appendChild(el);
+            }
+        </script>
+    </head>
+    <body>
+        <button type="button" class="btn btn-success" id="deploy" >Success</button>
+        <ul id='messages'></ul>
+    </body>
+</html>
+
+
